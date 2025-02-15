@@ -4,6 +4,9 @@ import com.simibubi.create.api.connectivity.ConnectivityHandler;
 import com.simibubi.create.content.equipment.wrench.IWrenchable;
 import com.simibubi.create.foundation.block.IBE;
 import com.simibubi.create.foundation.item.ItemHelper;
+
+import io.github.fabricators_of_create.porting_lib.block.CustomSoundTypeBlock;
+import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -11,7 +14,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -26,12 +28,9 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.Property;
-import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.ForgeSoundType;
 import org.jetbrains.annotations.NotNull;
 import uwu.lopyluna.create_bs.content.TierMaterials;
 import uwu.lopyluna.create_bs.registry.BSBlockEntities;
@@ -40,9 +39,11 @@ import uwu.lopyluna.create_bs.registry.BSBlocks;
 import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
+import java.util.function.Consumer;
+
 @MethodsReturnNonnullByDefault
-@SuppressWarnings("deprecation")
-public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVaultBlockEntity> {
+@SuppressWarnings({"deprecation", "all"})
+public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVaultBlockEntity>, CustomSoundTypeBlock {
 
     public static final Property<Direction.Axis> HORIZONTAL_AXIS = BlockStateProperties.HORIZONTAL_AXIS;
     public static final BooleanProperty LARGE = BooleanProperty.create("large");
@@ -85,20 +86,24 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
             return;
         if (pIsMoving)
             return;
+		Consumer<TieredVaultBlockEntity> consumer = TieredVaultItem.IS_PLACING_NBT
+				? TieredVaultBlockEntity::queueConnectivityUpdate
+				: TieredVaultBlockEntity::updateConnectivity;
         withBlockEntityDo(pLevel, pPos, TieredVaultBlockEntity::updateConnectivity);
     }
 
     @Override
     public InteractionResult onWrenched(BlockState state, UseOnContext context) {
-        if (context.getClickedFace().getAxis().isVertical()) {
-            BlockEntity be = context.getLevel().getBlockEntity(context.getClickedPos());
-            if (be instanceof TieredVaultBlockEntity vault) {
-                ConnectivityHandler.splitMulti(vault);
-                vault.removeController(true);
-            }
-            state = state.setValue(LARGE, false);
-        }
-        return IWrenchable.super.onWrenched(state, context);
+		if (context.getClickedFace().getAxis().isVertical()) {
+			BlockEntity be = context.getLevel()
+					.getBlockEntity(context.getClickedPos());
+			if (be instanceof TieredVaultBlockEntity vault) {
+				ConnectivityHandler.splitMulti(vault);
+				vault.removeController(true);
+			}
+			state = state.setValue(LARGE, false);
+		}
+		return IWrenchable.super.onWrenched(state, context);
     }
 
     @Override
@@ -106,8 +111,7 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
     public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean pIsMoving) {
         if (state.hasBlockEntity() && (state.getBlock() != newState.getBlock() || !newState.hasBlockEntity())) {
             BlockEntity be = world.getBlockEntity(pos);
-            if (!(be instanceof TieredVaultBlockEntity vaultBE))
-                return;
+            if (!(be instanceof TieredVaultBlockEntity vaultBE)) return;
             ItemHelper.dropContents(world, pos, vaultBE.inventory);
             world.removeBlockEntity(pos);
             ConnectivityHandler.splitMulti(vaultBE);
@@ -147,16 +151,15 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
     // Vaults are less noisy when placed in batch
     public SoundType silencedSound() {
         SoundType type = tierMaterials.soundType;
-        return new ForgeSoundType(0.1F, 1.5F, type::getBreakSound, type::getStepSound, type::getPlaceSound, type::getHitSound, type::getFallSound);
+        return new SoundType(0.1F, 1.5F, type.getBreakSound(), type.getStepSound(), type.getPlaceSound(), type.getHitSound(), type.getFallSound());
     }
 
     @Override
     public SoundType getSoundType(BlockState state, LevelReader world, BlockPos pos, Entity entity) {
-        SoundType soundType = super.getSoundType(state, world, pos, entity);
-        if (entity != null && entity.getPersistentData().contains("SilenceVaultSound")) return silencedSound();
+        SoundType soundType = super.getSoundType(state);
+        if (entity != null && entity.getCustomData().contains("SilenceVaultSound")) return silencedSound();
         return soundType;
     }
-
 
     @Override
     public boolean hasAnalogOutputSignal(@NotNull BlockState p_149740_1_) {
@@ -166,11 +169,23 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
     @Override
     @ParametersAreNonnullByDefault
     public int getAnalogOutputSignal(BlockState pState, Level pLevel, BlockPos pPos) {
-        return getBlockEntityOptional(pLevel, pPos)
-                .map(vte -> vte.getCapability(ForgeCapabilities.ITEM_HANDLER))
-                .map(lo -> lo.map(ItemHelper::calcRedstoneFromInventory)
-                        .orElse(0))
-                .orElse(0);
+		return getBlockEntityOptional(pLevel, pPos)
+				.filter(vte -> !Transaction.isOpen()) // fabric: hack fix for comparators updating when they shouldn't
+				.map(vte -> {
+					// fabric: fix for comparators grabbing the capability too quickly, relying on grabbing it through
+					// the non-controller's initCapability method isn't reliable and doesn't work properly.
+					// so what we end up doing is just returning the capability for the controller, and if it's
+					// not the controller it's own capability is returned
+					if (!vte.isController()) {
+						TieredVaultBlockEntity controllerBE = vte.getControllerBE();
+						if (controllerBE != null)
+							return controllerBE.getItemStorage(null);
+					}
+
+					return vte.getItemStorage(null);
+				})
+				.map(ItemHelper::calcRedstoneFromInventory)
+				.orElse(0);
     }
 
     @Override
@@ -210,10 +225,5 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
     @ParametersAreNonnullByDefault
     public boolean propagatesSkylightDown(BlockState pState, BlockGetter pReader, BlockPos pPos) {
         return isSeeThrough() || super.propagatesSkylightDown(pState, pReader, pPos);
-    }
-
-    @Override
-    public boolean shouldDisplayFluidOverlay(BlockState state, BlockAndTintGetter world, BlockPos pos, FluidState fluidState) {
-        return isSeeThrough() || shouldDisplayFluidOverlay(state, world, pos, fluidState);
     }
 }

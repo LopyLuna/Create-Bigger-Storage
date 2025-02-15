@@ -5,26 +5,17 @@ import com.simibubi.create.AllCreativeModeTabs;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
 import com.simibubi.create.foundation.item.TooltipHelper;
-import com.tterrag.registrate.util.entry.BlockEntry;
+import com.tterrag.registrate.fabric.EnvExecutor;
+
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.data.event.GatherDataEvent;
-import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import uwu.lopyluna.create_bs.content.vault.TieredVaultBlock;
-import uwu.lopyluna.create_bs.infrastructure.data.BSDatagen;
+import uwu.lopyluna.create_bs.content.TierMaterials;
 import uwu.lopyluna.create_bs.registry.*;
 
-import static net.minecraft.world.item.CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
-
 @SuppressWarnings("unused")
-@Mod(CreateBS.MOD_ID)
-public class CreateBS {
+public class CreateBS implements ModInitializer {
     public static final String NAME = "Create: Better Storages";
     public static final String MOD_ID = "create_bs";
 
@@ -33,24 +24,23 @@ public class CreateBS {
         REGISTRATE.setTooltipModifierFactory(item -> new ItemDescription.Modifier(item, TooltipHelper.Palette.STANDARD_CREATE));
     }
 
-    public CreateBS() {
-        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-        REGISTRATE.registerEventListeners(modEventBus);
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> BSSpriteShifts::register);
+	@Override
+	public void onInitialize() {
+		EnvExecutor.runWhenOn(EnvType.CLIENT, () -> BSSpriteShifts::register);
 
-        BSBlocks.register();
-        BSBlockEntities.register();
-        BSMovementChecks.register();
+		BSBlocks.register();
+		BSBlockEntities.register();
+		BSMovementChecks.register();
 
-        modEventBus.addListener(this::addCreative);
-        modEventBus.addListener(EventPriority.LOWEST, (GatherDataEvent event) -> BSDatagen.gatherData());
-        MinecraftForge.EVENT_BUS.register(this);
-    }
+		REGISTRATE.register();
 
-    private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey().equals(AllCreativeModeTabs.BASE_CREATIVE_TAB.getKey())) for (BlockEntry<TieredVaultBlock> entry : BSBlocks.VAULTS)
-                event.getEntries().putBefore(AllBlocks.ITEM_VAULT.asStack(), entry.asStack(), PARENT_AND_SEARCH_TABS);
-    }
+		ItemGroupEvents.modifyEntriesEvent(AllCreativeModeTabs.BASE_CREATIVE_TAB.key()).register(entries -> {
+			for (TierMaterials tier : TierMaterials.values()) {
+				if (!tier.valid) continue;
+				entries.addBefore(AllBlocks.ITEM_VAULT.asStack(), BSBlocks.VAULTS.get(tier).asStack());
+			}
+		});
+	}
 
     public static ResourceLocation asResource(String path) {
         return new ResourceLocation(MOD_ID, path);

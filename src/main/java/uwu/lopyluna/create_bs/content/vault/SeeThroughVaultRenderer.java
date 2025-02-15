@@ -24,7 +24,7 @@ public class SeeThroughVaultRenderer extends SmartBlockEntityRenderer<TieredVaul
         super.renderSafe(blockEntity, partialTicks, ms, buffer, light, overlay);
 
         BlockPos pos = blockEntity.getBlockPos();
-        int maxItems = (int) (blockEntity.getInventoryOfBlock().getSlots() * 0.5);
+        int maxItems = (int) (blockEntity.getInventoryOfBlock().getSlotCount() * 0.5);
         for (int slot = 0; slot < maxItems; slot++) {
             ItemStack stack = blockEntity.getInventoryOfBlock().getStackInSlot(slot);
             if (!stack.isEmpty()) {

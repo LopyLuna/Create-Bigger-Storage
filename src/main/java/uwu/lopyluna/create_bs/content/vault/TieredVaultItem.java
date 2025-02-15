@@ -1,6 +1,7 @@
 package uwu.lopyluna.create_bs.content.vault;
 
 import com.simibubi.create.api.connectivity.ConnectivityHandler;
+import com.simibubi.create.content.fluids.tank.FluidTankItem;
 import com.simibubi.create.foundation.utility.VecHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,12 +15,16 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import uwu.lopyluna.create_bs.content.TierMaterials;
 import uwu.lopyluna.create_bs.registry.BSBlockEntities;
 
 public class TieredVaultItem extends BlockItem {
 
+	@ApiStatus.Internal
+	public static boolean IS_PLACING_NBT = false;
     TierMaterials tierMaterials;
 
     public TieredVaultItem(Block block, Properties properties, TierMaterials tierMaterials) {
@@ -29,9 +34,11 @@ public class TieredVaultItem extends BlockItem {
 
     @Override
     public @NotNull InteractionResult place(@NotNull BlockPlaceContext ctx) {
-        InteractionResult initialResult = super.place(ctx);
-        if (!initialResult.consumesAction()) return initialResult;
-        tryMultiPlace(ctx);
+		IS_PLACING_NBT = FluidTankItem.checkPlacingNbt(ctx);
+		InteractionResult initialResult = super.place(ctx);
+		IS_PLACING_NBT = false;
+		if (!initialResult.consumesAction()) return initialResult;
+		tryMultiPlace(ctx);
         return initialResult;
     }
 
@@ -100,11 +107,11 @@ public class TieredVaultItem extends BlockItem {
             BlockState blockState = world.getBlockState(offsetPos);
             if (TieredVaultBlock.isVault(blockState, tierMaterials)) continue;
             BlockPlaceContext context = BlockPlaceContext.at(ctx, offsetPos, face);
-            player.getPersistentData()
-                    .putBoolean("SilenceVaultSound", true);
-            super.place(context);
-            player.getPersistentData()
-                    .remove("SilenceVaultSound");
+            player.getCustomData().putBoolean("SilenceVaultSound", true);
+			IS_PLACING_NBT = FluidTankItem.checkPlacingNbt(context);
+			super.place(context);
+			IS_PLACING_NBT = false;
+            player.getCustomData().remove("SilenceVaultSound");
         }
     }
 }

@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "create_bs",
+  "version": "${version}",
+  "name": "Create: Better Storages",
+  "description": "Bigger & Bigger Storages :3",
+  "authors": [
+    "LopyLuna"
+  ],
+  "contact": {
+    "sources": "https://github.com/LopyLuna/Create-Bigger-Storage"
+  },
+  "license": "MIT-CODE",
+  "icon": "pack.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "uwu.lopyluna.create_bs.CreateBS"
+    ]
+  },
+  "mixins": [
+    "create_bs.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${fabric_loader_version}",
+    "fabric-api": ">=${fabric_api_version}",
+    "create": "${create_version}",
+    "minecraft": "${minecraft_version}"
+  }
+}

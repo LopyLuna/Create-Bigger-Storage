@@ -2,15 +2,17 @@ package uwu.lopyluna.create_bs.registry;
 
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.SharedProperties;
+
+import io.github.fabricators_of_create.porting_lib.models.generators.ConfiguredModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
-import net.minecraftforge.client.model.generators.ConfiguredModel;
 import uwu.lopyluna.create_bs.CreateBS;
 import uwu.lopyluna.create_bs.content.TieredBlockList;
 import uwu.lopyluna.create_bs.content.vault.TieredVaultBlock;
@@ -18,10 +20,10 @@ import uwu.lopyluna.create_bs.content.vault.TieredVaultCTBehaviour;
 import uwu.lopyluna.create_bs.content.vault.TieredVaultItem;
 
 import static com.simibubi.create.foundation.data.CreateRegistrate.connectedTextures;
+import static com.simibubi.create.foundation.data.TagGen.axeOrPickaxe;
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
 import static uwu.lopyluna.create_bs.CreateBS.REGISTRATE;
 
-@SuppressWarnings("removal")
 public class BSBlocks {
 
     public static final TieredBlockList<TieredVaultBlock> VAULTS = new TieredBlockList<>(tier -> {
@@ -37,8 +39,9 @@ public class BSBlocks {
                         .isSuffocating(BSBlocks::never)
                         .isViewBlocking(BSBlocks::never))
                 .addLayer(() -> RenderType::cutout);
-        block.transform(pickaxeOnly())
-                .blockstate((c, p) -> {
+		if (tier.soundType.equals(SoundType.WOOD)) block.transform(axeOrPickaxe());
+		else block.transform(pickaxeOnly());
+        block.blockstate((c, p) -> {
                     ResourceLocation bottom = CreateBS.asResource("block/"+tierID+"_vault/vault_bottom_small");
                     ResourceLocation front = CreateBS.asResource("block/"+tierID+"_vault/vault_front_small");
                     ResourceLocation side = CreateBS.asResource("block/"+tierID+"_vault/vault_side_small");
