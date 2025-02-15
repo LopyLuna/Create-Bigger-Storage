@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:iron_block"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "V": {
+      "item": "create:item_vault"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "BVB",
+    "IBI"
+  ],
+  "result": {
+    "item": "create_bs:iron_item_vault"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,10 @@
+{
+  "parent": "create_bs:block/item_vault",
+  "textures": {
+    "0": "create_bs:block/emerald_vault/vault_bottom_small",
+    "1": "create_bs:block/emerald_vault/vault_front_small",
+    "2": "create_bs:block/emerald_vault/vault_side_small",
+    "3": "create_bs:block/emerald_vault/vault_top_small",
+    "particle": "create_bs:block/emerald_vault/vault_top_small"
+  }
+}

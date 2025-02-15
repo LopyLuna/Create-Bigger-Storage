@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:obsidian"
+    },
+    "I": {
+      "item": "create:powdered_obsidian"
+    },
+    "V": {
+      "item": "create_bs:diamond_item_vault"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "BVB",
+    "IBI"
+  ],
+  "result": {
+    "item": "create_bs:obsidian_item_vault"
+  },
+  "show_notification": true
+}

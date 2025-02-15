@@ -1,0 +1,11 @@
+{
+  "block.create_bs.copper_item_vault": "Copper Item Vault",
+  "block.create_bs.crystal_item_vault": "Crystal Item Vault",
+  "block.create_bs.diamond_item_vault": "Diamond Item Vault",
+  "block.create_bs.emerald_item_vault": "Emerald Item Vault",
+  "block.create_bs.gold_item_vault": "Gold Item Vault",
+  "block.create_bs.iron_item_vault": "Iron Item Vault",
+  "block.create_bs.netherite_item_vault": "Netherite Item Vault",
+  "block.create_bs.obsidian_item_vault": "Obsidian Item Vault",
+  "block.create_bs.wooden_item_vault": "Wooden Item Vault"
+}

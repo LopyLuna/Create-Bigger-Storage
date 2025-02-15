@@ -1,0 +1,35 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "create_bs:crafting/obsidian_item_vault"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_vault": {
+      "conditions": {
+        "items": [
+          {
+            "items": [
+              "create:item_vault"
+            ]
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_vault",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "create_bs:crafting/obsidian_item_vault"
+    ]
+  },
+  "sends_telemetry_event": false
+}

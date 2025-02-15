@@ -1,0 +1,34 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MIT-CODE, ARR-ART"
+
+[[mods]]
+modId="create_bs"
+version="${file.jarVersion}"
+displayName="Create: Better Storages"
+logoFile="pack.png"
+authors="LopyLuna"
+description='''
+Bigger & Bigger Storages :3
+'''
+
+[[dependencies.create_bs]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.create_bs]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.create_bs]]
+    modId="create"
+    mandatory=true
+    versionRange="[0.5.1.f,)"
+    ordering="AFTER"
+    side="BOTH"

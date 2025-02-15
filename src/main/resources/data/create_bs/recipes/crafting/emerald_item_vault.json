@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "B": {
+      "item": "minecraft:emerald_block"
+    },
+    "I": {
+      "item": "minecraft:emerald"
+    },
+    "V": {
+      "item": "create_bs:iron_item_vault"
+    }
+  },
+  "pattern": [
+    "IBI",
+    "BVB",
+    "IBI"
+  ],
+  "result": {
+    "item": "create_bs:emerald_item_vault"
+  },
+  "show_notification": true
+}
