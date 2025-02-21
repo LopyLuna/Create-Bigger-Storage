@@ -28,7 +28,7 @@ repositories {
 sourceCompatibility = JavaVersion.VERSION_17
 
 group = 'uwu.lopyluna.create_bs'
-base.archivesName = "Create-Better-Storages-${minecraft_version}"
+base.archivesName = "Create-Better-Storages-Fabric-${minecraft_version}"
 version = mod_version
 
 configurations.configureEach {
