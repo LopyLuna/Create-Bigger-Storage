@@ -1,0 +1,11 @@
+{
+  "block.create_bs.copper_item_vault": "Медное хранилище предметов",
+  "block.create_bs.crystal_item_vault": "Прозрачное хранилище предметов",
+  "block.create_bs.diamond_item_vault": "Алмазное хранилище предметов",
+  "block.create_bs.emerald_item_vault": "Изумрудное хранилище предметов",
+  "block.create_bs.gold_item_vault": "Золотое хранилище предметов",
+  "block.create_bs.iron_item_vault": "Железное хранилище предметов",
+  "block.create_bs.netherite_item_vault": "Незеритовое хранилище предметов",
+  "block.create_bs.obsidian_item_vault": "Обсидиановое хранилище предметов",
+  "block.create_bs.wooden_item_vault": "Деревянное хранилище предметов"
+}
