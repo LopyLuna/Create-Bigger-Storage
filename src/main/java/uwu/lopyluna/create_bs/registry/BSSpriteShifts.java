@@ -3,7 +3,7 @@ package uwu.lopyluna.create_bs.registry;
 import com.simibubi.create.foundation.block.connected.AllCTTypes;
 import com.simibubi.create.foundation.block.connected.CTSpriteShiftEntry;
 import com.simibubi.create.foundation.block.connected.CTSpriteShifter;
-import com.simibubi.create.foundation.utility.Couple;
+import net.createmod.catnip.data.Couple;
 import uwu.lopyluna.create_bs.CreateBS;
 import uwu.lopyluna.create_bs.content.TierMaterials;
 

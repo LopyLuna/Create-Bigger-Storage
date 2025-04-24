@@ -1,7 +1,9 @@
 package uwu.lopyluna.create_bs.registry;
 
+import com.simibubi.create.AllMountedStorageTypes;
 import com.simibubi.create.foundation.data.AssetLookup;
 import com.simibubi.create.foundation.data.SharedProperties;
+import com.tterrag.registrate.util.entry.RegistryEntry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -17,7 +19,9 @@ import uwu.lopyluna.create_bs.content.TieredBlockList;
 import uwu.lopyluna.create_bs.content.vault.TieredVaultBlock;
 import uwu.lopyluna.create_bs.content.vault.TieredVaultCTBehaviour;
 import uwu.lopyluna.create_bs.content.vault.TieredVaultItem;
+import uwu.lopyluna.create_bs.content.vault.TieredVaultMountedStorageType;
 
+import static com.simibubi.create.api.contraption.storage.item.MountedItemStorageType.mountedItemStorage;
 import static com.simibubi.create.foundation.data.CreateRegistrate.connectedTextures;
 import static com.simibubi.create.foundation.data.TagGen.axeOrPickaxe;
 import static com.simibubi.create.foundation.data.TagGen.pickaxeOnly;
@@ -25,11 +29,13 @@ import static uwu.lopyluna.create_bs.CreateBS.REGISTRATE;
 
 @SuppressWarnings("removal")
 public class BSBlocks {
+    public static final RegistryEntry<TieredVaultMountedStorageType> TIERED_VAULT = REGISTRATE.mountedItemStorage("tiered_vault", TieredVaultMountedStorageType::new).register();
 
     public static final TieredBlockList<TieredVaultBlock> VAULTS = new TieredBlockList<>(tier -> {
         if (!tier.valid) return null;
         String tierID = tier.name.toLowerCase();
-        var block = REGISTRATE.block(tierID + "_item_vault", p -> new TieredVaultBlock(p, tier));
+        var block = REGISTRATE.block(tierID + "_item_vault", p -> new TieredVaultBlock(p, tier))
+                .transform(mountedItemStorage(TIERED_VAULT));
         block.initialProperties(SharedProperties::softMetal).properties(p -> p.mapColor(tier.mapColor).sound(tier.soundType).explosionResistance(1200));
         if (tier.seeThrough) block.properties(p -> p
                         .instrument(NoteBlockInstrument.HAT)

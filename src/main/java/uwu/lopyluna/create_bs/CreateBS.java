@@ -4,7 +4,7 @@ import com.simibubi.create.AllBlocks;
 import com.simibubi.create.AllCreativeModeTabs;
 import com.simibubi.create.foundation.data.CreateRegistrate;
 import com.simibubi.create.foundation.item.ItemDescription;
-import com.simibubi.create.foundation.item.TooltipHelper;
+import net.createmod.catnip.lang.FontHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -17,7 +17,10 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import uwu.lopyluna.create_bs.content.TierMaterials;
 import uwu.lopyluna.create_bs.infrastructure.data.BSDatagen;
-import uwu.lopyluna.create_bs.registry.*;
+import uwu.lopyluna.create_bs.registry.BSBlockEntities;
+import uwu.lopyluna.create_bs.registry.BSBlocks;
+import uwu.lopyluna.create_bs.registry.BSMovementChecks;
+import uwu.lopyluna.create_bs.registry.BSSpriteShifts;
 
 import static net.minecraft.world.item.CreativeModeTab.TabVisibility.PARENT_AND_SEARCH_TABS;
 
@@ -29,7 +32,7 @@ public class CreateBS {
 
     public static final CreateRegistrate REGISTRATE = CreateRegistrate.create(MOD_ID);
     static {
-        REGISTRATE.setTooltipModifierFactory(item -> new ItemDescription.Modifier(item, TooltipHelper.Palette.STANDARD_CREATE));
+        REGISTRATE.setTooltipModifierFactory(item -> new ItemDescription.Modifier(item, FontHelper.Palette.STANDARD_CREATE));
     }
 
     public CreateBS() {

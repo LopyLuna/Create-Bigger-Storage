@@ -7,7 +7,6 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "create_bs.refmap.json",
   "mixins": [
-    "MountedStorageMixin"
   ],
   "injectors": {
     "defaultRequire": 1
