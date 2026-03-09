@@ -3,25 +3,23 @@
   "category": "misc",
   "key": {
     "B": {
-      "item": "minecraft:raw_gold_block"
+      "item": "minecraft:obsidian"
     },
     "I": {
-      "item": "minecraft:netherite_ingot"
-    },
-    "S": {
-      "item": "minecraft:diamond_block"
+      "item": "create:powdered_obsidian"
     },
     "V": {
       "item": "create_bs:diamond_item_vault"
     }
   },
   "pattern": [
-    "BSB",
-    "IVI",
-    "BSB"
+    "IBI",
+    "BVB",
+    "IBI"
   ],
   "result": {
-    "item": "create_bs:netherite_item_vault"
+    "id": "create_bs:obsidian_item_vault",
+    "count": 1
   },
   "show_notification": true
 }

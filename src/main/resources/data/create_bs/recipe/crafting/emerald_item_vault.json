@@ -3,22 +3,23 @@
   "category": "misc",
   "key": {
     "B": {
-      "item": "minecraft:gold_block"
+      "item": "minecraft:emerald_block"
     },
     "I": {
-      "item": "minecraft:gold_ingot"
+      "item": "minecraft:emerald"
     },
     "V": {
-      "item": "create_bs:emerald_item_vault"
+      "item": "create_bs:iron_item_vault"
     }
   },
   "pattern": [
     "IBI",
-    "IVI",
+    "BVB",
     "IBI"
   ],
   "result": {
-    "item": "create_bs:gold_item_vault"
+    "id": "create_bs:emerald_item_vault",
+    "count": 1
   },
   "show_notification": true
 }

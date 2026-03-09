@@ -3,22 +3,23 @@
   "category": "misc",
   "key": {
     "B": {
-      "item": "minecraft:copper_block"
+      "item": "minecraft:diamond_block"
     },
     "I": {
-      "item": "minecraft:copper_ingot"
+      "item": "minecraft:glass"
     },
     "V": {
-      "item": "create:item_vault"
+      "item": "create_bs:gold_item_vault"
     }
   },
   "pattern": [
-    "IBI",
+    "III",
     "BVB",
-    "IBI"
+    "III"
   ],
   "result": {
-    "item": "create_bs:copper_item_vault"
+    "id": "create_bs:crystal_item_vault",
+    "count": 1
   },
   "show_notification": true
 }

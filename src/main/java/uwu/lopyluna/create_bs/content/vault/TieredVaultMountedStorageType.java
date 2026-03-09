@@ -8,13 +8,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
 public class TieredVaultMountedStorageType extends MountedItemStorageType<TieredVaultMountedStorage> {
-	public TieredVaultMountedStorageType() {
-		super(TieredVaultMountedStorage.CODEC);
-	}
+    public TieredVaultMountedStorageType() {
+        super(TieredVaultMountedStorage.CODEC);
+    }
 
-	@Override
-	@Nullable
-	public TieredVaultMountedStorage mount(Level level, BlockState state, BlockPos pos, @Nullable BlockEntity be) {
-		return be instanceof TieredVaultBlockEntity vault ? TieredVaultMountedStorage.fromVault(vault) : null;
-	}
+    @Override
+    @Nullable
+    public TieredVaultMountedStorage mount(Level level, BlockState state, BlockPos pos, @Nullable BlockEntity be) {
+        return be instanceof TieredVaultBlockEntity vault ? TieredVaultMountedStorage.fromVault(vault) : null;
+    }
 }

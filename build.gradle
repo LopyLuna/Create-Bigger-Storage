@@ -1,210 +1,114 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
-        maven { url = 'https://maven.parchmentmc.org' }
-
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: "${forgegradle_version}", changing: false
-        classpath "org.parchmentmc:librarian:${librarian_version}"
-        classpath "org.spongepowered:mixingradle:0.7.+"
-    }
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.78'
 }
 
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.parchmentmc.librarian.forgegradle'
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
-apply plugin: 'org.spongepowered.mixin'
-
-jarJar.enable()
-
-group = 'uwu.lopyluna.create_bs'
-archivesBaseName = "Create-Better-Storages-Forge-${minecraft_version}"
 version = mod_version
+group = mod_group_id
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+base {
+    archivesName = mod_id
+}
 
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-minecraft {
-    mappings channel: 'parchment', version: "${parchment_version}-${minecraft_version}"
-
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
-
-    runs {
-        configureEach {
-            workingDirectory project.file('run')
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'forge.logging.console.level', 'debug'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            property 'mixin.debug.countInjections', 'true'
-            arg '-mixin.config=create_bs.mixins.json'
-
-            mods {
-                create_bs {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        client {
-            property 'forge.enabledGameTestNamespaces', 'create_bs'
-        }
-
-        server {
-            workingDirectory project.file('run-server')
-            property 'forge.enabledGameTestNamespaces', 'create_bs'
-            args '--nogui'
-        }
-
-        gameTestServer {
-            property 'forge.enabledGameTestNamespaces', 'create_bs'
-        }
-
-        data {
-            workingDirectory project.file('run-data')
-
-            args '--mod', "create_bs", '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/'), '--existing-mod', 'create'
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/generated/resources'
         }
     }
 }
 
 repositories {
-    maven { url = "https://dvs1.progwml6.com/files/maven/" }
-    maven { url = "https://modmaven.k-4u.nl" }
-    maven {
-        name = 'tterrag maven'
-        url = 'https://maven.tterrag.com/'
+    maven { url = "https://maven.createmod.net" }         // Create, Ponder, Flywheel
+    maven { url = "https://maven.ithundxr.dev/snapshots" } // Registrate
+    maven { url = "https://maven.blamejared.com" }        // JEI
+    maven { url = "https://maven.theillusivec4.top/" }    // Curios
+    mavenCentral()
+}
+
+neoForge {
+    version = neo_version
+
+    parchment {
+        minecraftVersion = minecraft_version
+        mappingsVersion = parchment_version
     }
-    maven {
-        name = "Jared's maven"
-        url = "https://maven.blamejared.com/"
-    }
-    maven {
-        name = "ModMaven"
-        url = "https://modmaven.dev"
-    }
-    maven {
-        name = "Modrinth"
-        url = "https://api.modrinth.com/maven"
-        content {
-            includeGroup "maven.modrinth"
+
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run')
+        }
+
+        server {
+            server()
+            gameDirectory = project.file('run-server')
+        }
+
+        data {
+            data()
+            gameDirectory = project.file('run-data')
+            programArguments.addAll(
+                    '--mod', mod_id,
+                    '--all',
+                    '--output', file('src/generated/resources/').getAbsolutePath(),
+                    '--existing', file('src/main/resources/').getAbsolutePath()
+            )
         }
     }
-    maven { url = "https://maven.createmod.net" }
-    flatDir {
-        dirs "libs"
+
+    mods {
+        create_bs {
+            sourceSet sourceSets.main
+        }
     }
 }
 
 dependencies {
-    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-
-    implementation fg.deobf("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") { transitive = false }
-    implementation fg.deobf("dev.engine-room.flywheel:flywheel-forge-${minecraft_version}:${flywheel_version}")
-    implementation fg.deobf("net.createmod.ponder:Ponder-Forge-${minecraft_version}:${ponder_version}")
-    implementation fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
-
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge-api:${jei_version}")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}-forge:${jei_version}")
-
-    compileOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${minecraft_version}:api")
-    runtimeOnly fg.deobf("top.theillusivec4.curios:curios-forge:${curios_version}+${minecraft_version}")
-
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.5"))
-    implementation(jarJar("io.github.llamalad7:mixinextras-forge:0.3.5")) {
-        jarJar.ranged(it, "[0.3.5,)")
+    implementation("com.simibubi.create:create-${minecraft_version}:${create_version}:slim") {
+        transitive = false
     }
+
+    implementation("net.createmod.ponder:ponder-neoforge:${ponder_version}+mc${minecraft_version}")
+
+    compileOnly("dev.engine-room.flywheel:flywheel-neoforge-api-${minecraft_version}:${flywheel_version}")
+    runtimeOnly("dev.engine-room.flywheel:flywheel-neoforge-${minecraft_version}:${flywheel_version}")
+
+    implementation("com.tterrag.registrate:Registrate:${registrate_version}")
+
+    compileOnly("mezz.jei:jei-${minecraft_version}-common-api:${jei_version}")
+    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
+    compileOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
+    runtimeOnly("top.theillusivec4.curios:curios-neoforge:${curios_version}")
 }
 
-sourceSets.main.resources {
-    srcDir 'src/generated/resources'
-    exclude '.cache/'
-}
-
-mixin {
-    config 'create_bs.mixins.json'
-    add sourceSets.main, 'create_bs.refmap.json'
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }
 
 jar {
     manifest {
-        attributes([
-                "Specification-Title"     : "create_bs",
-                "Specification-Vendor"    : "lopyluna",
-                "Specification-Version"   : "1",
-                'Implementation-Title'    : project.jar.archiveBaseName,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "lopyluna",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                "MixinConfigs"            : "create_bs.mixins.json"
-        ])
-    }
-    finalizedBy 'reobfJar'
-}
-
-//Copied from Creates Github
-
-afterEvaluate {
-    tasks.configureReobfTaskForReobfJar.mustRunAfter(tasks.compileJava)
-    tasks.configureReobfTaskForReobfJarJar.mustRunAfter(tasks.compileJava)
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8' // Use the UTF-8 charset for Java compilation
-}
-
-compileJava {
-    options.compilerArgs = ['-Xdiags:verbose']
-}
-
-task jarJarRelease {
-    group = 'jarjar'
-    doLast {
-        tasks.jarJar {
-            classifier = ''
-        }
-    }
-    finalizedBy tasks.jarJar
-}
-
-java {
-    withSourcesJar()
-}
-
-void addLicense(jarTask) {
-    jarTask.from('LICENSE') {
-        rename { "${it}_${project.archivesBaseName}" }
+        attributes(
+                "Specification-Title": mod_id,
+                "Specification-Vendor": "LopyLuna",
+                "Specification-Version": "1",
+                "Implementation-Title": project.name,
+                "Implementation-Version": version,
+                "Implementation-Vendor": "LopyLuna"
+        )
     }
 }
-
-jar.finalizedBy('reobfJar')
-tasks.jarJar.finalizedBy('reobfJarJar')
-
-addLicense(jar)
-addLicense(tasks.jarJar)
 
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            artifactId = archivesBaseName
-
+            artifactId = mod_id
             from components.java
-            fg.component(it)
-            jarJar.component(it)
-        }
-    }
-
-    repositories {
-        if (project.hasProperty('mavendir')) {
-            maven { url mavendir }
         }
     }
 }

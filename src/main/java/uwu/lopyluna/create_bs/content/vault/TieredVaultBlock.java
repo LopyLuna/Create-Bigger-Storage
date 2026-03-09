@@ -30,8 +30,9 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.common.util.ForgeSoundType;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.common.util.DeferredSoundType;
+import net.neoforged.neoforge.items.IItemHandler;
 import org.jetbrains.annotations.NotNull;
 import uwu.lopyluna.create_bs.content.TierMaterials;
 import uwu.lopyluna.create_bs.registry.BSBlockEntities;
@@ -48,44 +49,44 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
     public static final BooleanProperty LARGE = BooleanProperty.create("large");
     TierMaterials tierMaterials;
 
-    public TieredVaultBlock(Properties p_i48440_1_, TierMaterials tierMaterials) {
-        super(p_i48440_1_);
+    public TieredVaultBlock(Properties properties, TierMaterials tierMaterials) {
+        super(properties);
         this.tierMaterials = tierMaterials;
         registerDefaultState(defaultBlockState().setValue(LARGE, false));
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder) {
-        pBuilder.add(HORIZONTAL_AXIS, LARGE);
-        super.createBlockStateDefinition(pBuilder);
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(HORIZONTAL_AXIS, LARGE);
+        super.createBlockStateDefinition(builder);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext pContext) {
-        if (pContext.getPlayer() == null || !pContext.getPlayer()
-                .isShiftKeyDown()) {
-            BlockState placedOn = pContext.getLevel()
-                    .getBlockState(pContext.getClickedPos()
-                            .relative(pContext.getClickedFace()
-                                    .getOpposite()));
+    public BlockState getStateForPlacement(BlockPlaceContext context) {
+        if (context.getPlayer() == null || !context.getPlayer().isShiftKeyDown()) {
+            BlockState placedOn = context.getLevel()
+                    .getBlockState(context.getClickedPos().relative(context.getClickedFace().getOpposite()));
             Direction.Axis preferredAxis = getVaultBlockAxis(placedOn, tierMaterials);
-            if (preferredAxis != null)
-                return this.defaultBlockState()
-                        .setValue(HORIZONTAL_AXIS, preferredAxis);
+            if (preferredAxis != null) {
+                return this.defaultBlockState().setValue(HORIZONTAL_AXIS, preferredAxis);
+            }
         }
+
         return this.defaultBlockState()
-                .setValue(HORIZONTAL_AXIS, pContext.getHorizontalDirection()
-                        .getAxis());
+                .setValue(HORIZONTAL_AXIS, context.getHorizontalDirection().getAxis());
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public void onPlace(BlockState pState, Level pLevel, BlockPos pPos, BlockState pOldState, boolean pIsMoving) {
-        if (pOldState.getBlock() == pState.getBlock())
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
+        if (oldState.getBlock() == state.getBlock()) {
             return;
-        if (pIsMoving)
+        }
+        if (isMoving) {
             return;
-        withBlockEntityDo(pLevel, pPos, TieredVaultBlockEntity::updateConnectivity);
+        }
+
+        withBlockEntityDo(level, pos, TieredVaultBlockEntity::updateConnectivity);
     }
 
     @Override
@@ -98,18 +99,21 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
             }
             state = state.setValue(LARGE, false);
         }
+
         return IWrenchable.super.onWrenched(state, context);
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public void onRemove(BlockState state, Level world, BlockPos pos, BlockState newState, boolean pIsMoving) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         if (state.hasBlockEntity() && (state.getBlock() != newState.getBlock() || !newState.hasBlockEntity())) {
-            BlockEntity be = world.getBlockEntity(pos);
-            if (!(be instanceof TieredVaultBlockEntity vaultBE))
+            BlockEntity be = level.getBlockEntity(pos);
+            if (!(be instanceof TieredVaultBlockEntity vaultBE)) {
                 return;
-            ItemHelper.dropContents(world, pos, vaultBE.inventory);
-            world.removeBlockEntity(pos);
+            }
+
+            ItemHelper.dropContents(level, pos, vaultBE.inventory);
+            level.removeBlockEntity(pos);
             ConnectivityHandler.splitMulti(vaultBE);
         }
     }
@@ -120,57 +124,78 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
 
     @Nullable
     public static Direction.Axis getVaultBlockAxis(BlockState state, TierMaterials tier) {
-        if (!isVault(state, tier))
+        if (!isVault(state, tier)) {
             return null;
+        }
         return state.getValue(HORIZONTAL_AXIS);
     }
 
     public static boolean isLarge(BlockState state, TierMaterials tier) {
-        if (!isVault(state, tier))
+        if (!isVault(state, tier)) {
             return false;
+        }
         return state.getValue(LARGE);
     }
 
     @Override
     public BlockState rotate(BlockState state, Rotation rot) {
         Direction.Axis axis = state.getValue(HORIZONTAL_AXIS);
-        return state.setValue(HORIZONTAL_AXIS, rot.rotate(Direction.fromAxisAndDirection(axis, Direction.AxisDirection.POSITIVE))
-                .getAxis());
+        return state.setValue(
+                HORIZONTAL_AXIS,
+                rot.rotate(Direction.fromAxisAndDirection(axis, Direction.AxisDirection.POSITIVE)).getAxis()
+        );
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public BlockState mirror(BlockState state, Mirror mirrorIn) {
+    public BlockState mirror(BlockState state, Mirror mirror) {
         return state;
     }
 
-    // Vaults are less noisy when placed in batch
     public SoundType silencedSound() {
         SoundType type = tierMaterials.soundType;
-        return new ForgeSoundType(0.1F, 1.5F, type::getBreakSound, type::getStepSound, type::getPlaceSound, type::getHitSound, type::getFallSound);
+        return new DeferredSoundType(
+                0.1F,
+                1.5F,
+                type::getBreakSound,
+                type::getStepSound,
+                type::getPlaceSound,
+                type::getHitSound,
+                type::getFallSound
+        );
     }
 
     @Override
-    public SoundType getSoundType(BlockState state, LevelReader world, BlockPos pos, Entity entity) {
-        SoundType soundType = super.getSoundType(state, world, pos, entity);
-        if (entity != null && entity.getPersistentData().contains("SilenceVaultSound")) return silencedSound();
+    public SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos, Entity entity) {
+        SoundType soundType = super.getSoundType(state, level, pos, entity);
+        if (entity != null && entity.getPersistentData().contains("SilenceVaultSound")) {
+            return silencedSound();
+        }
         return soundType;
     }
 
-
     @Override
-    public boolean hasAnalogOutputSignal(@NotNull BlockState p_149740_1_) {
+    public boolean hasAnalogOutputSignal(@NotNull BlockState state) {
         return true;
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public int getAnalogOutputSignal(BlockState pState, Level pLevel, BlockPos pPos) {
-        return getBlockEntityOptional(pLevel, pPos)
-                .map(vte -> vte.getCapability(ForgeCapabilities.ITEM_HANDLER))
-                .map(lo -> lo.map(ItemHelper::calcRedstoneFromInventory)
-                        .orElse(0))
-                .orElse(0);
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+        BlockEntity be = level.getBlockEntity(pos);
+        if (!(be instanceof TieredVaultBlockEntity)) {
+            return 0;
+        }
+
+        IItemHandler handler = level.getCapability(
+                Capabilities.ItemHandler.BLOCK,
+                pos,
+                state,
+                be,
+                null
+        );
+
+        return handler != null ? ItemHelper.calcRedstoneFromInventory(handler) : 0;
     }
 
     @Override
@@ -183,37 +208,39 @@ public class TieredVaultBlock extends Block implements IWrenchable, IBE<TieredVa
         return TieredVaultBlockEntity.class;
     }
 
-
     public boolean isSeeThrough() {
         return tierMaterials.seeThrough;
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public boolean skipRendering(BlockState pState, BlockState pAdjacentBlockState, Direction pSide) {
-        return isSeeThrough() ? (pAdjacentBlockState.getBlock() instanceof TieredVaultBlock block && block.isSeeThrough()) || super.skipRendering(pState, pAdjacentBlockState, pSide) : super.skipRendering(pState, pAdjacentBlockState, pSide);
+    public boolean skipRendering(BlockState state, BlockState adjacentState, Direction side) {
+        return isSeeThrough()
+                ? (adjacentState.getBlock() instanceof TieredVaultBlock block && block.isSeeThrough())
+                || super.skipRendering(state, adjacentState, side)
+                : super.skipRendering(state, adjacentState, side);
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public VoxelShape getVisualShape(BlockState pState, BlockGetter pReader, BlockPos pPos, CollisionContext pContext) {
-        return isSeeThrough() ? Shapes.empty() : super.getVisualShape(pState, pReader, pPos, pContext);
+    public VoxelShape getVisualShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context) {
+        return isSeeThrough() ? Shapes.empty() : super.getVisualShape(state, reader, pos, context);
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public float getShadeBrightness(BlockState pState, BlockGetter pLevel, BlockPos pPos) {
-        return isSeeThrough() ? 1.0F : super.getShadeBrightness(pState, pLevel, pPos);
+    public float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+        return isSeeThrough() ? 1.0F : super.getShadeBrightness(state, level, pos);
     }
 
     @Override
     @ParametersAreNonnullByDefault
-    public boolean propagatesSkylightDown(BlockState pState, BlockGetter pReader, BlockPos pPos) {
-        return isSeeThrough() || super.propagatesSkylightDown(pState, pReader, pPos);
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos) {
+        return isSeeThrough() || super.propagatesSkylightDown(state, reader, pos);
     }
 
     @Override
     public boolean shouldDisplayFluidOverlay(BlockState state, BlockAndTintGetter world, BlockPos pos, FluidState fluidState) {
-        return isSeeThrough() || shouldDisplayFluidOverlay(state, world, pos, fluidState);
+        return isSeeThrough() || super.shouldDisplayFluidOverlay(state, world, pos, fluidState);
     }
 }

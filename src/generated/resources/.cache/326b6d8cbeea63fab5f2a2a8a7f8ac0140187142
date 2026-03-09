@@ -1,4 +1,4 @@
-// 1.20.1	2025-02-14T23:38:38.9035209	Registrate Provider for create_bs [Recipes, Advancements, Loot Tables, Tags (blocks), Tags (items), Tags (fluids), Tags (entity_types), Blockstates, Item models, Lang (en_us/en_ud)]
+// 1.21.1	2026-03-09T08:44:05.0923232	Registrate Provider for create_bs [Registries, Data Maps, Recipes, Advancements, Loot Tables, Tags (blocks), Tags (enchantments), Tags (items), Tags (fluids), Tags (entity_types), generic_server_provider, Blockstates, Item models, Lang (en_us/en_ud), generic_client_provider]
 bcba5c2a61064d58999406d45c41fedfdd181d93 assets/create_bs/blockstates/copper_item_vault.json
 72b908a1d13704a70720891ba7e064f194b31071 assets/create_bs/blockstates/crystal_item_vault.json
 87134b65062db597a9735a13032395d6a2464d0b assets/create_bs/blockstates/diamond_item_vault.json
@@ -28,14 +28,14 @@ a7331b0caa66b97b3f209d5c3ddaa2c3475c3b0f assets/create_bs/models/block/obsidian_
 f356acdfc3da46d3ed3ec85a8fcbf1f13d0a2d01 assets/create_bs/models/item/netherite_item_vault.json
 6b29451670e1fd3561d88876522d2089837a5f91 assets/create_bs/models/item/obsidian_item_vault.json
 02d3efcf3b804a58347f4144e79e35b873df23fd assets/create_bs/models/item/wooden_item_vault.json
-294d2a54a6be1bf2a3217eecae3b7ed11da795e0 data/create_bs/loot_tables/blocks/copper_item_vault.json
-f418a4acf8d367e556ffd916a34deee796cf41ee data/create_bs/loot_tables/blocks/crystal_item_vault.json
-7b2216010e7519a8c05ac8857070c5fc577e29e1 data/create_bs/loot_tables/blocks/diamond_item_vault.json
-315700ad04d11cc9fa78e7e07b5074eddcc5a383 data/create_bs/loot_tables/blocks/emerald_item_vault.json
-5cd22be1028a909b6ec20b5fa0aaec7a9d8e3e76 data/create_bs/loot_tables/blocks/gold_item_vault.json
-eddd02ad8c968bef66cdf3c73cb2a6065202604c data/create_bs/loot_tables/blocks/iron_item_vault.json
-0531e0f99e5271d4b117992fe64339b5bee4c20a data/create_bs/loot_tables/blocks/netherite_item_vault.json
-4e830609592fb174927add53f42525a59e1f0b01 data/create_bs/loot_tables/blocks/obsidian_item_vault.json
-bf1c0accc4c30e9a9795f9727a43baf23a94e135 data/create_bs/loot_tables/blocks/wooden_item_vault.json
-02546cb9d76280e6a1871afda3e974650950ff3a data/create_bs/tags/items/vaults.json
-02546cb9d76280e6a1871afda3e974650950ff3a data/minecraft/tags/blocks/mineable/pickaxe.json
+294d2a54a6be1bf2a3217eecae3b7ed11da795e0 data/create_bs/loot_table/blocks/copper_item_vault.json
+f418a4acf8d367e556ffd916a34deee796cf41ee data/create_bs/loot_table/blocks/crystal_item_vault.json
+7b2216010e7519a8c05ac8857070c5fc577e29e1 data/create_bs/loot_table/blocks/diamond_item_vault.json
+315700ad04d11cc9fa78e7e07b5074eddcc5a383 data/create_bs/loot_table/blocks/emerald_item_vault.json
+5cd22be1028a909b6ec20b5fa0aaec7a9d8e3e76 data/create_bs/loot_table/blocks/gold_item_vault.json
+eddd02ad8c968bef66cdf3c73cb2a6065202604c data/create_bs/loot_table/blocks/iron_item_vault.json
+0531e0f99e5271d4b117992fe64339b5bee4c20a data/create_bs/loot_table/blocks/netherite_item_vault.json
+4e830609592fb174927add53f42525a59e1f0b01 data/create_bs/loot_table/blocks/obsidian_item_vault.json
+bf1c0accc4c30e9a9795f9727a43baf23a94e135 data/create_bs/loot_table/blocks/wooden_item_vault.json
+143208f36d39f9e9ac1e4172d7a7f8b5c310af2c data/minecraft/tags/block/mineable/axe.json
+02546cb9d76280e6a1871afda3e974650950ff3a data/minecraft/tags/block/mineable/pickaxe.json

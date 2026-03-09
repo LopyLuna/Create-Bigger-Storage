@@ -3,22 +3,23 @@
   "category": "misc",
   "key": {
     "B": {
-      "item": "minecraft:iron_block"
+      "item": "minecraft:gold_block"
     },
     "I": {
-      "item": "minecraft:iron_ingot"
+      "item": "minecraft:gold_ingot"
     },
     "V": {
-      "item": "create_bs:copper_item_vault"
+      "item": "create_bs:iron_item_vault"
     }
   },
   "pattern": [
     "IBI",
-    "IVI",
+    "BVB",
     "IBI"
   ],
   "result": {
-    "item": "create_bs:iron_item_vault"
+    "id": "create_bs:gold_item_vault",
+    "count": 1
   },
   "show_notification": true
 }
