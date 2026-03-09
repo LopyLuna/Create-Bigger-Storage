@@ -29,6 +29,6 @@ Bigger & Bigger Storages :3
 [[dependencies.create_bs]]
     modId="create"
     mandatory=true
-    versionRange="[0.5.1.f,)"
+    versionRange="[6.0.0,)"
     ordering="AFTER"
     side="BOTH"
